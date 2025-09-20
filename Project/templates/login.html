@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЭкоСлед - калькулятор CO2</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body class="main-login">
+      <main class="login">
+        {% block content %}
+        <form action="{{ url_for('login') }}" method="POST" class="login">
+            <p class="error">{{error}}</p>
+            <label for="username">
+              <input class ="from_input" type="text" name="username" id="username" placeholder="Логин" required>
+            </label>
+            <label for="password">
+              <input class ="from_input" type="password" name="password" id="password" placeholder="Пароль" required>
+            </label>
+                <button class="form__button">Войти</button>
+                <button class="form__button" onclick="window.location.href='/reg'">Зарегистрироваться</button>
+        </form>
+        {% endblock %}
+      </main>
+</body>
+</html>

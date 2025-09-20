@@ -1,0 +1,93 @@
+<!doctype ghtml>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ЭкоСлед - калькулятор CO2</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-light">
+<div class="container py-4">
+    <h1 class="mb-4">Калькулятор углеводного следа</h1>
+
+<nav>
+    <ul>
+        <li>
+            <a href = "index">Калькулятор</a>
+        </li>
+        <li>
+            <a href = "info">Информация</a>
+    </ul>
+</nav>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form method="POST" action="{{ url_for('index')  }}">
+                <div class="mb-3">
+                    <label for="mileage" class="form-label">Пробег на машине (км в год)</label>
+                    <input id="mileage" name="mileage" type="number" step="any" value="{{ electricity or '' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="electricity" class="form-label">Потребление электроэнергии (кВт ч в год)</label>
+                    <input id="electricity" name="electricity" type="number" step="any" value="{{ electricity or '' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="meat" class="form-label">Мясные блюда в неделю</label>
+                    <input id="meat" name="meat" type="number" step="any" value="{{ meat or '' }}" required>
+                </div>
+                <button class="btn btn-primary" type="submit">Расчитать</button>
+            </form>
+            <p class="text-muted mt-3">
+                Введите данные и нажмите «Рассчитать», чтобы увидеть ваш углеродный след.
+            </p>
+        </div>
+
+        <div class="col-md-6">
+            {% if result %}
+            <div class="card mb-3">
+                <div class="card-body">
+                <h5>Итог: <strong>{{ result.total }} кг CO₂ в год</strong></h5>
+                <p class="mb-1">Транспорт: {{ result.transport }} кг</p>
+                <p class="mb-1">Электричество: {{ result.electricity }} кг</p>
+                <p class="mb-1">Питание: {{ result.diet }} кг</p>
+                </div>
+            </div>
+
+            <canvas id="pieChart" width="400" height="400"></canvas>
+
+            <script>
+                const chartData = {
+                labels: ['Транспорт','Электричество','Питание'],
+                datasets: [{
+                    data: [{{ result.transport }}, {{ result.electricity }}, {{ result.diet }}],
+                    backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56']
+                }]
+                };
+                new Chart(document.getElementById('pieChart'), {
+                type: 'pie',
+                data: chartData,
+                });
+            </script>
+
+            {% else %}
+            <p class="text-muted">Введите данные и нажмите «Рассчитать» — результат появится здесь.</p>
+            {% endif %}
+        </div>
+    </div>
+    <hr>
+    <h4>Последние результаты</h4>
+    <ul class="list-group">
+        {% for r in recent %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ r.timestamp.strftime("%Y-%m-%d %H:%M") }} - {{ "%.2f" | format(r.co2) }} кг CO2
+        </li>
+        {% else %}
+        <li class="list-group-item">Нет данных</li>
+        {% endfor %}
+        </ul>
+</div>
+</body>
+</html>
